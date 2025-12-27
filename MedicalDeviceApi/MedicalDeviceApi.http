@@ -1,0 +1,29 @@
+@MedicalDeviceApi_HostAddress = http://localhost:5244
+
+### Get all devices
+GET {{MedicalDeviceApi_HostAddress}}/api/Devices
+Accept: application/json
+
+### Create a new device
+POST {{MedicalDeviceApi_HostAddress}}/api/Devices
+Content-Type: application/json
+
+{
+  "DeviceName": "Infusion Pump X200",
+  "SerialNumber": "SN-123456-X200",
+  "Status": "Active"
+}
+
+### Update device (change ID as needed)
+PUT {{MedicalDeviceApi_HostAddress}}/api/Devices/1
+Content-Type: application/json
+
+{
+  "DeviceName": "Updated X-Ray Machine",
+  "Status": "Maintenance"
+}
+
+### Delete device (soft delete - change ID as needed)
+DELETE {{MedicalDeviceApi_HostAddress}}/api/Devices/1
+
+###
