@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MedicalDeviceApi.Models;
-using MedicalDeviceApi.Interfaces; // Nhớ using Interface
+using MedicalDeviceApi.Interfaces; // using Interface
+using MedicalDeviceApi.Repositories;
 
 namespace MedicalDeviceApi.Controllers
 {
@@ -54,7 +55,28 @@ namespace MedicalDeviceApi.Controllers
             }
             catch (KeyNotFoundException ex)
             {
-                return NotFound(new { Message = ex.Message, DeviceId = id });
+                return NotFound(new { Message = ex.Message, DeviceID = id });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Lỗi hệ thống: " + ex.Message, Error = ex.ToString() });
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult SoftDeleteDevice(int id)
+        {
+            try
+            {
+                bool result = _repository.SoftDeleteDevice(id);
+                if (result)
+                {
+                    return Ok(new { Message = "Xóa thiết bị thành công" });
+                }
+                else
+                {
+                    return NotFound(new { Message = $"Device with ID {id} not found." });
+                }
             }
             catch (Exception ex)
             {

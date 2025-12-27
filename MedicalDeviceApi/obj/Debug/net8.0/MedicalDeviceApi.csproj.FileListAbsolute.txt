@@ -145,6 +145,7 @@ D:\Project\EquipmentManager\MedicalDeviceApi\obj\Debug\net8.0\MedicalDeviceApi.A
 D:\Project\EquipmentManager\MedicalDeviceApi\obj\Debug\net8.0\MedicalDeviceApi.csproj.CoreCompileInputs.cache
 D:\Project\EquipmentManager\MedicalDeviceApi\obj\Debug\net8.0\MedicalDeviceApi.MvcApplicationPartsAssemblyInfo.cs
 D:\Project\EquipmentManager\MedicalDeviceApi\obj\Debug\net8.0\MedicalDeviceApi.MvcApplicationPartsAssemblyInfo.cache
+D:\Project\EquipmentManager\MedicalDeviceApi\obj\Debug\net8.0\MedicalDeviceApi.sourcelink.json
 D:\Project\EquipmentManager\MedicalDeviceApi\obj\Debug\net8.0\rjimswa.dswa.cache.json
 D:\Project\EquipmentManager\MedicalDeviceApi\obj\Debug\net8.0\rjsmrazor.dswa.cache.json
 D:\Project\EquipmentManager\MedicalDeviceApi\obj\Debug\net8.0\rjsmcshtml.dswa.cache.json

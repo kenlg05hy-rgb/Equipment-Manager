@@ -6,6 +6,7 @@ namespace MedicalDeviceApi.Interfaces
     {
         List<Device> GetAllDevices();
         void CreateDevice(CreateDeviceDto deviceDto);
-        void UpdateDevice(int DeviceId, UpdateDeviceDto deviceDto);
+        void UpdateDevice(int id, UpdateDeviceDto deviceDto);
+        bool SoftDeleteDevice(int id);
     }
 }

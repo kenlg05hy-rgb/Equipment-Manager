@@ -83,7 +83,7 @@ namespace MedicalDeviceApi.Repositories
             }
         }
 
-        public void UpdateDevice(int DeviceId, UpdateDeviceDto deviceDto)
+        public void UpdateDevice(int id, UpdateDeviceDto deviceDto)
         {
             using var conn = new SqlConnection(_connectionString);
             conn.Open();
@@ -96,11 +96,28 @@ namespace MedicalDeviceApi.Repositories
 
             cmd.Parameters.AddWithValue("@DeviceName", deviceDto.DeviceName);
             cmd.Parameters.AddWithValue("@Status", deviceDto.Status);
-            cmd.Parameters.AddWithValue("@DeviceID", DeviceId);
+            cmd.Parameters.AddWithValue("@DeviceID", id);
 
             int row = cmd.ExecuteNonQuery();
 
-            if (row == 0) throw new KeyNotFoundException($"Device with ID {DeviceId} not found.");
+            if (row == 0) throw new KeyNotFoundException($"Device with ID {id} not found.");
+        }
+
+        public bool SoftDeleteDevice(int id)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            conn.Open();
+
+            using var cmd = new SqlCommand(
+                @"UPDATE Devices
+                  SET IsDeleted = 1
+                  WHERE DeviceID = @DeviceID", conn);
+
+            cmd.Parameters.AddWithValue("@DeviceID", id);
+
+            int row = cmd.ExecuteNonQuery();
+
+            return row > 0;
         }
     }
 }
