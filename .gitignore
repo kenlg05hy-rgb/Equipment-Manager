@@ -1,0 +1,28 @@
+# Build results
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+
+# IDE
+.vscode/
+.vs/
+*.user
+*.userprefs
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Dependencies
+node_modules/
+.packages/
+
+# Test files
+*.test.ps1
+test-*.ps1
+simple-*.ps1
