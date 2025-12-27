@@ -119,5 +119,29 @@ namespace MedicalDeviceApi.Repositories
 
             return row > 0;
         }
+
+        public Device? GetDeviceById(int DeviceID)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            conn.Open();
+
+            var cmd = new SqlCommand(
+                @"SELECT * FROM Devices
+          WHERE DeviceID = @id AND IsDeleted = 0", conn);
+
+            cmd.Parameters.AddWithValue("@id", DeviceID);
+
+            using var reader = cmd.ExecuteReader();
+            if (!reader.Read()) return null;
+
+            return new Device
+            {
+                DeviceID = (int)reader["DeviceID"],
+                DeviceName = reader["DeviceName"]?.ToString() ?? string.Empty,
+                SerialNumber = reader["SerialNumber"]?.ToString() ?? string.Empty,
+                Status = reader["Status"]?.ToString() ?? string.Empty
+            };
+        }
+
     }
 }
