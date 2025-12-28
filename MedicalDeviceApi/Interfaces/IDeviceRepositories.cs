@@ -8,5 +8,7 @@ namespace MedicalDeviceApi.Interfaces
         void CreateDevice(CreateDeviceDto deviceDto);
         void UpdateDevice(int id, UpdateDeviceDto deviceDto);
         bool SoftDeleteDevice(int id);
+        Device? GetDeviceById(int id);
+        IEnumerable<Device> SearchDevices(string? status, string? keyword);
     }
 }

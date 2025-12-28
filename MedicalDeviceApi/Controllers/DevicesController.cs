@@ -83,5 +83,37 @@ namespace MedicalDeviceApi.Controllers
                 return StatusCode(500, new { Message = "Lỗi hệ thống: " + ex.Message, Error = ex.ToString() });
             }
         }
+
+        [HttpGet("{id:int}")]
+        public IActionResult GetDeviceById(int id)
+        {
+            try
+            {
+                var device = _repository.GetDeviceById(id);
+                if (device == null)
+                {
+                    return NotFound(new { Message = $"Device with ID {id} not found." });
+                }
+                return Ok(device);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Lỗi hệ thống: " + ex.Message, Error = ex.ToString() });
+            }
+        }
+
+        [HttpGet("search")]
+        public IActionResult SearchDevices([FromQuery] string? status, [FromQuery] string? keyword)
+        {
+            try
+            {
+                var devices = _repository.SearchDevices(status, keyword);
+                return Ok(devices);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Lỗi hệ thống: " + ex.Message, Error = ex.ToString() });
+            }
+        }
     }
 }

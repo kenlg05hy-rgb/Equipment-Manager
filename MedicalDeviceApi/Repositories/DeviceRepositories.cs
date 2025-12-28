@@ -1,7 +1,7 @@
-using Microsoft.Data.SqlClient;
 using MedicalDeviceApi.Interfaces;
 using MedicalDeviceApi.Models;
 using System.Data;
+using Microsoft.Data.SqlClient;
 
 namespace MedicalDeviceApi.Repositories
 {
@@ -120,7 +120,7 @@ namespace MedicalDeviceApi.Repositories
             return row > 0;
         }
 
-        public Device? GetDeviceById(int DeviceID)
+        public Device? GetDeviceById(int id)
         {
             using var conn = new SqlConnection(_connectionString);
             conn.Open();
@@ -129,7 +129,7 @@ namespace MedicalDeviceApi.Repositories
                 @"SELECT * FROM Devices
           WHERE DeviceID = @id AND IsDeleted = 0", conn);
 
-            cmd.Parameters.AddWithValue("@id", DeviceID);
+            cmd.Parameters.AddWithValue("@id", id);
 
             using var reader = cmd.ExecuteReader();
             if (!reader.Read()) return null;
@@ -141,6 +141,36 @@ namespace MedicalDeviceApi.Repositories
                 SerialNumber = reader["SerialNumber"]?.ToString() ?? string.Empty,
                 Status = reader["Status"]?.ToString() ?? string.Empty
             };
+        }
+
+        public IEnumerable<Device> SearchDevices(string? status, string? keyword)
+        {
+            var devices = new List<Device>();
+            using var conn = new SqlConnection(_connectionString);
+            conn.Open();
+
+            var sql = @"SELECT * FROM Devices
+                WHERE IsDeleted = 0
+                AND (@status IS NULL OR Status = @status)
+                AND (@keyword IS NULL OR DeviceName LIKE '%' + @keyword + '%')";
+
+            using var cmd = new SqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@status", (object?)status ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@keyword", (object?)keyword ?? DBNull.Value);
+
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                devices.Add(new Device
+                {
+                    DeviceID = (int)reader["DeviceID"],
+                    DeviceName = reader["DeviceName"]?.ToString() ?? string.Empty,
+                    SerialNumber = reader["SerialNumber"]?.ToString() ?? string.Empty,
+                    Status = reader["Status"]?.ToString() ?? string.Empty
+                });
+            }
+
+            return devices;
         }
 
     }
