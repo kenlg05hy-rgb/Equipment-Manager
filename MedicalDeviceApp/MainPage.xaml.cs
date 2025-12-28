@@ -14,7 +14,10 @@ namespace MedicalDeviceApp
 		public MainPage()
 		{
 			InitializeComponent();
-			DeviceList.ItemsSource = DevicesCollection;
+			if (DeviceList is not null)
+			{
+				DeviceList.ItemsSource = DevicesCollection;
+			}
 		}
 
 		// --- 1. TẢI DANH SÁCH ---
@@ -25,20 +28,28 @@ namespace MedicalDeviceApp
 				using HttpClient client = new HttpClient();
 				var devices = await client.GetFromJsonAsync<List<DeviceModel>>(ApiUrl);
 				DevicesCollection.Clear();
-				foreach (var device in devices) DevicesCollection.Add(device);
+				if (devices is { Count: > 0 })
+				{
+					foreach (var device in devices) DevicesCollection.Add(device);
+				}
 			}
 			catch (Exception ex)
 			{
-				await DisplayAlert("Lỗi", ex.Message, "OK");
+				await DisplayAlertAsync("Lỗi", ex.Message, "OK");
 			}
 		}
 
 		// --- 2. XỬ LÝ NÚT LƯU (Dùng chung cho THÊM và SỬA) ---
 		private async void OnAddClicked(object sender, EventArgs e)
 		{
-			if (string.IsNullOrWhiteSpace(TxtName.Text)) return;
+			if (string.IsNullOrWhiteSpace(TxtName?.Text)) return;
 
-			var deviceData = new { deviceName = TxtName.Text, serialNumber = TxtSerial.Text, status = TxtStatus.Text };
+			var deviceData = new
+			{
+				deviceName = TxtName?.Text ?? string.Empty,
+				serialNumber = TxtSerial?.Text ?? string.Empty,
+				status = TxtStatus?.Text ?? string.Empty
+			};
 			using HttpClient client = new HttpClient();
 
 			try
@@ -59,30 +70,29 @@ namespace MedicalDeviceApp
 
 				if (response.IsSuccessStatusCode)
 				{
-					await DisplayAlert("Thành công", _editingDeviceId == null ? "Đã thêm mới!" : "Đã cập nhật!", "OK");
+					await DisplayAlertAsync("Thành công", _editingDeviceId == null ? "Đã thêm mới!" : "Đã cập nhật!", "OK");
 
 					// Reset Form về trạng thái thêm mới
 					ResetForm();
 
 					// Tải lại danh sách để thấy thay đổi
-					OnLoadClicked(null, null);
+					OnLoadClicked(this, EventArgs.Empty);
 				}
 				else
 				{
 					string error = await response.Content.ReadAsStringAsync();
-					await DisplayAlert("Thất bại", error, "OK");
+					await DisplayAlertAsync("Thất bại", error, "OK");
 				}
 			}
-			catch (Exception ex) { await DisplayAlert("Lỗi", ex.Message, "OK"); }
+			catch (Exception ex) { await DisplayAlertAsync("Lỗi", ex.Message, "OK"); }
 		}
 
 		// --- 3. CHỨC NĂNG XÓA (DELETE) ---
 		private async void OnDeleteClicked(object sender, EventArgs e)
 		{
-			var button = sender as Button;
-			int id = (int)button.CommandParameter; // Lấy ID từ nút bấm
+			if (sender is not Button { CommandParameter: int id }) return;
 
-			bool answer = await DisplayAlert("Xác nhận", "Bạn có chắc muốn xóa thiết bị này?", "Yes", "No");
+			bool answer = await DisplayAlertAsync("Xác nhận", "Bạn có chắc muốn xóa thiết bị này?", "Yes", "No");
 			if (!answer) return;
 
 			try
@@ -98,44 +108,102 @@ namespace MedicalDeviceApp
 				}
 				else
 				{
-					await DisplayAlert("Lỗi", "Không thể xóa", "OK");
+					await DisplayAlertAsync("Lỗi", "Không thể xóa", "OK");
 				}
 			}
-			catch (Exception ex) { await DisplayAlert("Lỗi", ex.Message, "OK"); }
+			catch (Exception ex) { await DisplayAlertAsync("Lỗi", ex.Message, "OK"); }
 		}
 
 		// --- 4. CHỨC NĂNG CHUẨN BỊ SỬA (Đưa dữ liệu lên Form) ---
 		private void OnEditClicked(object sender, EventArgs e)
 		{
-			var button = sender as Button;
-			var device = button.CommandParameter as DeviceModel; // Lấy cả cục Object
+			if (sender is not Button { CommandParameter: DeviceModel device }) return;
 
 			// Đổ dữ liệu cũ lên ô nhập
-			TxtName.Text = device.DeviceName;
-			TxtSerial.Text = device.SerialNumber;
-			TxtStatus.Text = device.Status;
+			if (TxtName is not null) TxtName.Text = device.DeviceName;
+			if (TxtSerial is not null) TxtSerial.Text = device.SerialNumber;
+			if (TxtStatus is not null) TxtStatus.Text = device.Status;
 
 			// Lưu lại ID đang sửa
 			_editingDeviceId = device.DeviceID;
 
 			// Đổi tên nút để người dùng biết
-			(this.FindByName("LoadBtn") as Button).Text = "Hủy Bỏ Sửa"; // Tận dụng nút Load làm nút Hủy
+			if (this.FindByName<Button>("LoadBtn") is Button loadBtn)
+			{
+				loadBtn.Text = "Hủy Bỏ Sửa"; // Tận dụng nút Load làm nút Hủy
+			}
 		}
 
 		// Hàm dọn dẹp Form
 		private void ResetForm()
 		{
-			TxtName.Text = ""; TxtSerial.Text = ""; TxtStatus.Text = "";
+			if (TxtName is not null) TxtName.Text = string.Empty;
+			if (TxtSerial is not null) TxtSerial.Text = string.Empty;
+			if (TxtStatus is not null) TxtStatus.Text = string.Empty;
 			_editingDeviceId = null;
-			(this.FindByName("LoadBtn") as Button).Text = "🔄 Tải Lại Danh Sách";
+			if (this.FindByName<Button>("LoadBtn") is Button loadBtn)
+			{
+				loadBtn.Text = "🔄 Tải Lại Danh Sách";
+			}
+		}
+
+		// --- 5. CHỨC NĂNG TÌM KIẾM (SEARCH) ---
+
+		// Sự kiện khi bấm nút Tìm hoặc Enter trên bàn phím
+		private async void OnSearchPressed(object sender, EventArgs e)
+		{
+			string keyword = TxtSearch?.Text ?? string.Empty; // Lấy chữ người dùng nhập
+
+			// Nếu ô tìm kiếm trống -> Tải lại tất cả (như nút Refresh)
+			if (string.IsNullOrWhiteSpace(keyword))
+			{
+				OnLoadClicked(this, EventArgs.Empty);
+				return;
+			}
+
+			try
+			{
+				using HttpClient client = new HttpClient();
+
+				// Gọi API Search đã viết ở Day 10
+				// URL mẫu: http://localhost:5244/api/Devices/search?keyword=X-Quang
+				string searchUrl = $"{ApiUrl}/search?keyword={keyword}";
+
+				var devices = await client.GetFromJsonAsync<List<DeviceModel>>(searchUrl);
+
+				// Cập nhật danh sách hiển thị
+				DevicesCollection.Clear();
+				if (devices is { Count: > 0 })
+				{
+					foreach (var d in devices) DevicesCollection.Add(d);
+				}
+				else
+				{
+					// Nếu không tìm thấy gì thì thông báo nhẹ hoặc để danh sách trống
+					// await DisplayAlertAsync("Kết quả", "Không tìm thấy thiết bị nào!", "OK");
+				}
+			}
+			catch (Exception ex)
+			{
+				await DisplayAlertAsync("Lỗi Tìm Kiếm", ex.Message, "OK");
+			}
+		}
+
+		// Sự kiện: Khi xóa trắng ô tìm kiếm thì tự load lại danh sách gốc
+		private void OnSearchTextChanged(object sender, TextChangedEventArgs e)
+		{
+			if (string.IsNullOrWhiteSpace(e.NewTextValue))
+			{
+				OnLoadClicked(this, EventArgs.Empty);
+			}
 		}
 	}
 
 	public class DeviceModel
 	{
 		public int DeviceID { get; set; }
-		public string DeviceName { get; set; }
-		public string SerialNumber { get; set; }
-		public string Status { get; set; }
+		public string DeviceName { get; set; } = string.Empty;
+		public string SerialNumber { get; set; } = string.Empty;
+		public string Status { get; set; } = string.Empty;
 	}
 }

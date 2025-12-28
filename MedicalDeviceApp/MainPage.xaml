@@ -39,33 +39,47 @@
                             FontAttributes="Bold"/>
                 </VerticalStackLayout>
             </Frame>
-
             <Button x:Name="LoadBtn"
                     Text="🔄 Tải Lại Danh Sách"
                     Clicked="OnLoadClicked"
                     BackgroundColor="#512BD4"/>
 
+            <Grid ColumnDefinitions="*, Auto"
+                  Margin="0,10">
+                <SearchBar x:Name="TxtSearch"
+                           Grid.Column="0"
+                           Placeholder="Nhập tên máy hoặc trạng thái..."
+                           SearchButtonPressed="OnSearchPressed"
+                           TextChanged="OnSearchTextChanged"/>
+
+                <Button Grid.Column="1"
+                        Text="🔍 Tìm"
+                        Clicked="OnSearchPressed"
+                        BackgroundColor="#6200EE"
+                        TextColor="White"/>
+            </Grid>
+
             <CollectionView x:Name="DeviceList"
-                    HeightRequest="400">
+                            HeightRequest="400">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Frame Margin="0,5"
-                                Padding="10"
-                                BorderColor="LightGray"
-                                CornerRadius="5">
+                               Padding="10"
+                               BorderColor="LightGray"
+                               CornerRadius="5">
                             <Grid ColumnDefinitions="*, Auto, Auto">
                                 <VerticalStackLayout Grid.Column="0"
-                                        VerticalOptions="Center">
+                                                     VerticalOptions="Center">
                                     <Label Text="{Binding DeviceName}"
-                                            FontSize="16"
-                                            FontAttributes="Bold"
-                                            TextColor="Black"/>
+                                           FontSize="16"
+                                           FontAttributes="Bold"
+                                           TextColor="Black"/>
                                     <Label Text="{Binding SerialNumber}"
-                                            FontSize="12"
-                                            TextColor="Gray"/>
+                                           FontSize="12"
+                                           TextColor="Gray"/>
                                     <Label Text="{Binding Status}"
-                                            FontSize="12"
-                                            TextColor="Blue"/>
+                                           FontSize="12"
+                                           TextColor="Blue"/>
                                 </VerticalStackLayout>
 
                                 <Button Grid.Column="1"
@@ -75,7 +89,7 @@
                                         TextColor="Black"
                                         Margin="5,0"
                                         Clicked="OnEditClicked"
-                                        CommandParameter="{Binding .}"/>
+                                        CommandParameter="{Binding}"/>
                                 <Button Grid.Column="2"
                                         Text="Xóa"
                                         FontSize="12"
