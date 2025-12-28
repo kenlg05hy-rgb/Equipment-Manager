@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MedicalDeviceApp.MainPage">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="15">
+
+            <Label Text="🏥 App Quản Lý Thiết Bị"
+                   FontSize="28"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"
+                   TextColor="#512BD4"/>
+
+            <Frame BorderColor="Gray"
+                   CornerRadius="10"
+                   Padding="15"
+                   BackgroundColor="#F0F9FF">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Thêm Thiết Bị Mới"
+                           FontAttributes="Bold"
+                           TextColor="Black"/>
+
+                    <Entry x:Name="TxtName"
+                           Placeholder="Tên thiết bị (VD: Máy X-Quang)"
+                           BackgroundColor="White"/>
+                    <Entry x:Name="TxtSerial"
+                           Placeholder="Số Serial (VD: SN-001)"
+                           BackgroundColor="White"/>
+                    <Entry x:Name="TxtStatus"
+                           Placeholder="Trạng thái (VD: Tốt)"
+                           BackgroundColor="White"/>
+
+                    <Button Text="+ Lưu Vào Hệ Thống"
+                            Clicked="OnAddClicked"
+                            BackgroundColor="#00C853"
+                            TextColor="White"
+                            FontAttributes="Bold"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <Button x:Name="LoadBtn"
+                    Text="🔄 Tải Lại Danh Sách"
+                    Clicked="OnLoadClicked"
+                    BackgroundColor="#512BD4"/>
+
+            <CollectionView x:Name="DeviceList"
+                    HeightRequest="400">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Margin="0,5"
+                                Padding="10"
+                                BorderColor="LightGray"
+                                CornerRadius="5">
+                            <Grid ColumnDefinitions="*, Auto, Auto">
+                                <VerticalStackLayout Grid.Column="0"
+                                        VerticalOptions="Center">
+                                    <Label Text="{Binding DeviceName}"
+                                            FontSize="16"
+                                            FontAttributes="Bold"
+                                            TextColor="Black"/>
+                                    <Label Text="{Binding SerialNumber}"
+                                            FontSize="12"
+                                            TextColor="Gray"/>
+                                    <Label Text="{Binding Status}"
+                                            FontSize="12"
+                                            TextColor="Blue"/>
+                                </VerticalStackLayout>
+
+                                <Button Grid.Column="1"
+                                        Text="Sửa"
+                                        FontSize="12"
+                                        BackgroundColor="#FFC107"
+                                        TextColor="Black"
+                                        Margin="5,0"
+                                        Clicked="OnEditClicked"
+                                        CommandParameter="{Binding .}"/>
+                                <Button Grid.Column="2"
+                                        Text="Xóa"
+                                        FontSize="12"
+                                        BackgroundColor="#FF5252"
+                                        TextColor="White"
+                                        Clicked="OnDeleteClicked"
+                                        CommandParameter="{Binding DeviceID}"/>
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
