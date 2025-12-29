@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MedicalDeviceApp.AddEditPage"
+             Title="Cập Nhật Thiết Bị">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                Spacing="15">
+            <Label x:Name="LblHeader"
+                    Text="Thêm Mới Thiết Bị"
+                    FontSize="20"
+                    FontAttributes="Bold"
+                    HorizontalOptions="Center"
+                    TextColor="#512BD4"/>
+            <Frame BorderColor="Gray"
+                    CornerRadius="10"
+                    Padding="15"
+                    BackgroundColor="White">
+                <VerticalStackLayout Spacing="10">
+                    <Entry x:Name="TxtName"
+                            Placeholder="Tên thiết bị *"
+                            TextColor="Black"/>
+                    <Entry x:Name="TxtSerial"
+                            Placeholder="Số Serial *"
+                            TextColor="Black"/>
+                    <Entry x:Name="TxtModel"
+                            Placeholder="Model"
+                            TextColor="Black"/>
+                    <Entry x:Name="TxtOrigin"
+                            Placeholder="Nước sản xuất"
+                            TextColor="Black"/>
+                    <Entry x:Name="TxtPrice"
+                            Placeholder="Giá tiền"
+                            Keyboard="Numeric"
+                            TextColor="Black"/>
+                    <Entry x:Name="TxtSupplier"
+                            Placeholder="Nhà cung cấp"
+                            TextColor="Black"/>
+                    <DatePicker x:Name="PickPurchaseDate"
+                            Format="dd/MM/yyyy"
+                            TextColor="Black"/>
+                    <Entry x:Name="TxtDepartment"
+                            Placeholder="Khoa/Phòng"
+                            TextColor="Black"/>
+                    <Entry x:Name="TxtStatus"
+                            Placeholder="Trạng thái"
+                            TextColor="Black"/>
+                </VerticalStackLayout>
+            </Frame>
+            <Button Text="Lưu Dữ Liệu"
+                    Clicked="OnSaveClicked"
+                    BackgroundColor="#00C853"
+                    TextColor="White"
+                    FontAttributes="Bold"/>
+            <Button Text="Hủy Bỏ"
+                    Clicked="OnCancelClicked"
+                    BackgroundColor="Red"
+                    TextColor="White"/>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

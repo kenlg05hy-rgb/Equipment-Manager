@@ -5,78 +5,87 @@ namespace MedicalDeviceApp
 {
 	public partial class MainPage : ContentPage
 	{
+		// Link API
 		private const string ApiUrl = "http://localhost:5244/api/Devices";
-		public ObservableCollection<DeviceModel> DevicesCollection { get; set; } = new();
 
-		// Biến lưu trạng thái: Đang sửa thiết bị nào? (null = đang thêm mới)
+		public ObservableCollection<DeviceModel> DevicesCollection { get; set; } = new();
 		private int? _editingDeviceId = null;
 
 		public MainPage()
 		{
 			InitializeComponent();
-			if (DeviceList is not null)
-			{
-				DeviceList.ItemsSource = DevicesCollection;
-			}
+			DeviceList.ItemsSource = DevicesCollection;
+			// Load dữ liệu khi mở App
+			OnLoadClicked(null, null);
 		}
 
-		// --- 1. TẢI DANH SÁCH ---
+		// TẢI DANH SÁCH
 		private async void OnLoadClicked(object sender, EventArgs e)
 		{
 			try
 			{
 				using HttpClient client = new HttpClient();
 				var devices = await client.GetFromJsonAsync<List<DeviceModel>>(ApiUrl);
+
 				DevicesCollection.Clear();
-				if (devices is { Count: > 0 })
+				if (devices != null)
 				{
 					foreach (var device in devices) DevicesCollection.Add(device);
 				}
 			}
 			catch (Exception ex)
 			{
-				await DisplayAlertAsync("Lỗi", ex.Message, "OK");
+				await DisplayAlertAsync("Lỗi", "Không kết nối được API: " + ex.Message, "OK");
 			}
 		}
 
-		// --- 2. XỬ LÝ NÚT LƯU (Dùng chung cho THÊM và SỬA) ---
+		// LƯU
 		private async void OnAddClicked(object sender, EventArgs e)
 		{
-			if (string.IsNullOrWhiteSpace(TxtName?.Text)) return;
+			// Validate
+			if (string.IsNullOrWhiteSpace(TxtName.Text) || string.IsNullOrWhiteSpace(TxtSerial.Text))
+			{
+				await DisplayAlertAsync("Thiếu thông tin", "Vui lòng nhập Tên và Số Serial!", "OK");
+				return;
+			}
+
+			// Xử lý giá tiền
+			decimal.TryParse(TxtPrice.Text, out decimal price);
 
 			var deviceData = new
 			{
-				deviceName = TxtName?.Text ?? string.Empty,
-				serialNumber = TxtSerial?.Text ?? string.Empty,
-				status = TxtStatus?.Text ?? string.Empty
-			};
-			using HttpClient client = new HttpClient();
+				deviceName = TxtName.Text,
+				serialNumber = TxtSerial.Text,
+				status = TxtStatus.Text ?? "Mới",
 
+				model = TxtModel.Text,
+				origin = TxtOrigin.Text,
+				price = price,
+				supplier = TxtSupplier.Text,
+				department = TxtDepartment.Text,
+				purchaseDate = PickPurchaseDate.Date
+			};
+
+			using HttpClient client = new HttpClient();
 			try
 			{
 				HttpResponseMessage response;
-
 				if (_editingDeviceId == null)
 				{
-					// === TRƯỜNG HỢP THÊM MỚI (POST) ===
+					// POST
 					response = await client.PostAsJsonAsync(ApiUrl, deviceData);
 				}
 				else
 				{
-					// === TRƯỜNG HỢP CẬP NHẬT (PUT) ===
-					// Gọi API: PUT /api/Devices/{id}
+					// PUT
 					response = await client.PutAsJsonAsync($"{ApiUrl}/{_editingDeviceId}", deviceData);
 				}
 
 				if (response.IsSuccessStatusCode)
 				{
-					await DisplayAlertAsync("Thành công", _editingDeviceId == null ? "Đã thêm mới!" : "Đã cập nhật!", "OK");
-
-					// Reset Form về trạng thái thêm mới
+					await DisplayAlertAsync("Thành công", "Đã lưu hồ sơ thiết bị!", "OK");
 					ResetForm();
-
-					// Tải lại danh sách để thấy thay đổi
-					OnLoadClicked(this, EventArgs.Empty);
+					OnLoadClicked(null, null);
 				}
 				else
 				{
@@ -87,123 +96,103 @@ namespace MedicalDeviceApp
 			catch (Exception ex) { await DisplayAlertAsync("Lỗi", ex.Message, "OK"); }
 		}
 
-		// --- 3. CHỨC NĂNG XÓA (DELETE) ---
+		// XÓA
 		private async void OnDeleteClicked(object sender, EventArgs e)
 		{
-			if (sender is not Button { CommandParameter: int id }) return;
-
-			bool answer = await DisplayAlertAsync("Xác nhận", "Bạn có chắc muốn xóa thiết bị này?", "Yes", "No");
-			if (!answer) return;
-
-			try
+			if (sender is Button button && button.CommandParameter is int id)
 			{
-				using HttpClient client = new HttpClient();
-				var response = await client.DeleteAsync($"{ApiUrl}/{id}");
+				bool answer = await DisplayAlertAsync("Xác nhận", "Bạn muốn xóa thiết bị này?", "Yes", "No");
+				if (!answer) return;
 
-				if (response.IsSuccessStatusCode)
+				try
 				{
-					// Xóa trên giao diện ngay lập tức (Không cần gọi lại API Load)
-					var itemToRemove = DevicesCollection.FirstOrDefault(x => x.DeviceID == id);
-					if (itemToRemove != null) DevicesCollection.Remove(itemToRemove);
+					using HttpClient client = new HttpClient();
+					var response = await client.DeleteAsync($"{ApiUrl}/{id}");
+
+					if (response.IsSuccessStatusCode)
+					{
+						OnLoadClicked(null, null);
+					}
 				}
-				else
-				{
-					await DisplayAlertAsync("Lỗi", "Không thể xóa", "OK");
-				}
+				catch (Exception ex) { await DisplayAlertAsync("Lỗi", ex.Message, "OK"); }
 			}
-			catch (Exception ex) { await DisplayAlertAsync("Lỗi", ex.Message, "OK"); }
 		}
 
-		// --- 4. CHỨC NĂNG CHUẨN BỊ SỬA (Đưa dữ liệu lên Form) ---
+		// SỬA
 		private void OnEditClicked(object sender, EventArgs e)
 		{
-			if (sender is not Button { CommandParameter: DeviceModel device }) return;
-
-			// Đổ dữ liệu cũ lên ô nhập
-			if (TxtName is not null) TxtName.Text = device.DeviceName;
-			if (TxtSerial is not null) TxtSerial.Text = device.SerialNumber;
-			if (TxtStatus is not null) TxtStatus.Text = device.Status;
-
-			// Lưu lại ID đang sửa
-			_editingDeviceId = device.DeviceID;
-
-			// Đổi tên nút để người dùng biết
-			if (this.FindByName<Button>("LoadBtn") is Button loadBtn)
+			if (sender is Button button && button.CommandParameter is DeviceModel device)
 			{
-				loadBtn.Text = "Hủy Bỏ Sửa"; // Tận dụng nút Load làm nút Hủy
+				// Điền thông tin cũ vào ô nhập
+				TxtName.Text = device.DeviceName ?? string.Empty;
+				TxtSerial.Text = device.SerialNumber ?? string.Empty;
+				TxtStatus.Text = device.Status ?? string.Empty;
+
+				TxtModel.Text = device.Model ?? string.Empty;
+				TxtOrigin.Text = device.Origin ?? string.Empty;
+				TxtPrice.Text = device.Price?.ToString("0") ?? string.Empty; // Bỏ số thập phân thừa
+				TxtSupplier.Text = device.Supplier ?? string.Empty;
+				TxtDepartment.Text = device.Department ?? string.Empty;
+
+				if (device.PurchaseDate.HasValue)
+					PickPurchaseDate.Date = device.PurchaseDate.Value;
+
+				_editingDeviceId = device.DeviceID;
+
+				// Đổi nút lưu thành Cập nhật
+				BtnSave.Text = "💾 Cập Nhật Hồ Sơ";
+				BtnSave.BackgroundColor = Color.FromArgb("#FFC107");
+				BtnSave.TextColor = Colors.Black;
+
+				LoadBtn.Text = "Hủy Bỏ Sửa";
 			}
 		}
 
-		// Hàm dọn dẹp Form
-		private void ResetForm()
-		{
-			if (TxtName is not null) TxtName.Text = string.Empty;
-			if (TxtSerial is not null) TxtSerial.Text = string.Empty;
-			if (TxtStatus is not null) TxtStatus.Text = string.Empty;
-			_editingDeviceId = null;
-			if (this.FindByName<Button>("LoadBtn") is Button loadBtn)
-			{
-				loadBtn.Text = "🔄 Tải Lại Danh Sách";
-			}
-		}
-
-		// --- 5. CHỨC NĂNG TÌM KIẾM (SEARCH) ---
-
-		// Sự kiện khi bấm nút Tìm hoặc Enter trên bàn phím
+		// --- 5. TÌM KIẾM ---
 		private async void OnSearchPressed(object sender, EventArgs e)
 		{
-			string keyword = TxtSearch?.Text ?? string.Empty; // Lấy chữ người dùng nhập
-
-			// Nếu ô tìm kiếm trống -> Tải lại tất cả (như nút Refresh)
-			if (string.IsNullOrWhiteSpace(keyword))
-			{
-				OnLoadClicked(this, EventArgs.Empty);
-				return;
-			}
+			string keyword = TxtSearch.Text;
+			if (string.IsNullOrWhiteSpace(keyword)) { OnLoadClicked(null, null); return; }
 
 			try
 			{
 				using HttpClient client = new HttpClient();
-
-				// Gọi API Search đã viết ở Day 10
-				// URL mẫu: http://localhost:5244/api/Devices/search?keyword=X-Quang
-				string searchUrl = $"{ApiUrl}/search?keyword={keyword}";
-
-				var devices = await client.GetFromJsonAsync<List<DeviceModel>>(searchUrl);
-
-				// Cập nhật danh sách hiển thị
+				var devices = await client.GetFromJsonAsync<List<DeviceModel>>($"{ApiUrl}/search?keyword={keyword}");
 				DevicesCollection.Clear();
-				if (devices is { Count: > 0 })
-				{
-					foreach (var d in devices) DevicesCollection.Add(d);
-				}
-				else
-				{
-					// Nếu không tìm thấy gì thì thông báo nhẹ hoặc để danh sách trống
-					// await DisplayAlertAsync("Kết quả", "Không tìm thấy thiết bị nào!", "OK");
-				}
+				if (devices != null) foreach (var d in devices) DevicesCollection.Add(d);
 			}
-			catch (Exception ex)
-			{
-				await DisplayAlertAsync("Lỗi Tìm Kiếm", ex.Message, "OK");
-			}
+			catch { }
 		}
 
-		// Sự kiện: Khi xóa trắng ô tìm kiếm thì tự load lại danh sách gốc
 		private void OnSearchTextChanged(object sender, TextChangedEventArgs e)
 		{
-			if (string.IsNullOrWhiteSpace(e.NewTextValue))
+			if (string.IsNullOrWhiteSpace(e.NewTextValue)) OnLoadClicked(null, null);
+		}
+
+		private async void OnDetailClicked(object sender, EventArgs e)
+		{
+			if (sender is Button btn && btn.CommandParameter is DeviceModel device)
 			{
-				OnLoadClicked(this, EventArgs.Empty);
+				// Chuyển sang trang DetailPage
+				var navParam = new Dictionary<string, object> { { "DeviceObj", device } };
+				await Shell.Current.GoToAsync(nameof(DetailPage), navParam);
 			}
 		}
-	}
 
-	public class DeviceModel
-	{
-		public int DeviceID { get; set; }
-		public string DeviceName { get; set; } = string.Empty;
-		public string SerialNumber { get; set; } = string.Empty;
-		public string Status { get; set; } = string.Empty;
+		private void ResetForm()
+		{
+			TxtName.Text = ""; TxtSerial.Text = ""; TxtStatus.Text = "";
+			TxtModel.Text = ""; TxtOrigin.Text = ""; TxtPrice.Text = "";
+			TxtSupplier.Text = ""; TxtDepartment.Text = "";
+			PickPurchaseDate.Date = DateTime.Now;
+
+			_editingDeviceId = null;
+			LoadBtn.Text = "🔄 Tải Lại Danh Sách";
+
+			// Trả lại nút Lưu màu xanh
+			BtnSave.Text = "+ Lưu Hồ Sơ Thiết Bị";
+			BtnSave.BackgroundColor = Color.FromArgb("#00C853");
+			BtnSave.TextColor = Colors.White;
+		}
 	}
 }

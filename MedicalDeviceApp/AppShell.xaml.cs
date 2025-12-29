@@ -1,9 +1,13 @@
-﻿namespace MedicalDeviceApp;
-
-public partial class AppShell : Shell
+﻿namespace MedicalDeviceApp
 {
-	public AppShell()
+	public partial class AppShell : Shell
 	{
-		InitializeComponent();
+		public AppShell()
+		{
+			InitializeComponent();
+			// Đăng ký trang con
+			Routing.RegisterRoute(nameof(DetailPage), typeof(DetailPage));
+			Routing.RegisterRoute(nameof(AddEditPage), typeof(AddEditPage));
+		}
 	}
 }

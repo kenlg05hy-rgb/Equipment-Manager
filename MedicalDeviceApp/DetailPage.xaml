@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MedicalDeviceApp.DetailPage"
+             Title="Chi Tiết Thiết Bị">
+
+        <ScrollView>
+                <VerticalStackLayout Padding="20"
+                                Spacing="20">
+
+                        <Frame BorderColor="#2196F3"
+                                        CornerRadius="10"
+                                        Padding="15"
+                                        BackgroundColor="White">
+                                <Grid ColumnDefinitions="Auto, *"
+                                                RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
+                                                RowSpacing="10"
+                                                ColumnSpacing="10">
+                                        <Label Grid.Row="0"
+                                                        Grid.Column="0"
+                                                        Text="Tên TB:"
+                                                        FontAttributes="Bold"
+                                                        TextColor="Black"/>
+                                        <Label Grid.Row="0"
+                                                        Grid.Column="1"
+                                                        x:Name="LblName"
+                                                        TextColor="#1565C0"
+                                                        FontAttributes="Bold"
+                                                        FontSize="18"/>
+
+                                        <Label Grid.Row="1"
+                                                        Grid.Column="0"
+                                                        Text="Serial:"
+                                                        FontAttributes="Bold"
+                                                        TextColor="Black"/>
+                                        <Label Grid.Row="1"
+                                                        Grid.Column="1"
+                                                        x:Name="LblSerial"
+                                                        TextColor="Black"/>
+
+                                        <Label Grid.Row="2"
+                                                        Grid.Column="0"
+                                                        Text="Model:"
+                                                        FontAttributes="Bold"
+                                                        TextColor="Black"/>
+                                        <Label Grid.Row="2"
+                                                        Grid.Column="1"
+                                                        x:Name="LblModel"
+                                                        TextColor="Black"/>
+
+                                        <Label Grid.Row="3"
+                                                        Grid.Column="0"
+                                                        Text="Xuất xứ:"
+                                                        FontAttributes="Bold"
+                                                        TextColor="Black"/>
+                                        <Label Grid.Row="3"
+                                                        Grid.Column="1"
+                                                        x:Name="LblOrigin"
+                                                        TextColor="Black"/>
+
+                                        <Label Grid.Row="4"
+                                                        Grid.Column="0"
+                                                        Text="Giá:"
+                                                        FontAttributes="Bold"
+                                                        TextColor="Black"/>
+                                        <Label Grid.Row="4"
+                                                        Grid.Column="1"
+                                                        x:Name="LblPrice"
+                                                        TextColor="Red"/>
+
+                                        <Label Grid.Row="5"
+                                                        Grid.Column="0"
+                                                        Text="Ngày mua:"
+                                                        FontAttributes="Bold"
+                                                        TextColor="Black"/>
+                                        <Label Grid.Row="5"
+                                                        Grid.Column="1"
+                                                        x:Name="LblDate"
+                                                        TextColor="Black"/>
+
+                                        <Label Grid.Row="6"
+                                                        Grid.Column="0"
+                                                        Text="NCC:"
+                                                        FontAttributes="Bold"
+                                                        TextColor="Black"/>
+                                        <Label Grid.Row="6"
+                                                        Grid.Column="1"
+                                                        x:Name="LblSupplier"
+                                                        TextColor="Black"/>
+
+                                        <Label Grid.Row="7"
+                                                        Grid.Column="0"
+                                                        Text="Khoa:"
+                                                        FontAttributes="Bold"
+                                                        TextColor="Black"/>
+                                        <Label Grid.Row="7"
+                                                        Grid.Column="1"
+                                                        x:Name="LblDept"
+                                                        TextColor="Black"/>
+
+                                        <Label Grid.Row="8"
+                                                        Grid.Column="0"
+                                                        Text="Trạng thái:"
+                                                        FontAttributes="Bold"
+                                                        TextColor="Black"/>
+                                        <Label Grid.Row="8"
+                                                        Grid.Column="1"
+                                                        x:Name="LblStatus"
+                                                        TextColor="Black"/>
+                                </Grid>
+                        </Frame>
+
+                        <VerticalStackLayout Spacing="10">
+                                <Label Text="🛠️ Lịch Sử Bảo Trì / Sửa Chữa"
+                                                FontSize="18"
+                                                FontAttributes="Bold"
+                                                TextColor="#E65100"/>
+
+                                <CollectionView x:Name="MaintenanceList"
+                                                HeightRequest="200">
+                                        <CollectionView.EmptyView>
+                                                <Label Text="Chưa có lịch sử bảo trì nào."
+                                                                TextColor="Gray"
+                                                                HorizontalOptions="Center"
+                                                                Margin="10"/>
+                                        </CollectionView.EmptyView>
+                                        <CollectionView.ItemTemplate>
+                                                <DataTemplate>
+                                                        <Frame Margin="0,5"
+                                                                        Padding="10"
+                                                                        BackgroundColor="#FFF3E0"
+                                                                        BorderColor="#FFB74D"
+                                                                        CornerRadius="5">
+                                                                <Grid ColumnDefinitions="Auto, *, Auto">
+                                                                        <Label Grid.Column="0"
+                                                                                        Text="{Binding FormattedDate}"
+                                                                                        FontAttributes="Bold"
+                                                                                        TextColor="#E65100"
+                                                                                        WidthRequest="90"/>
+
+                                                                        <Label Grid.Column="1"
+                                                                                        Text="{Binding Description}"
+                                                                                        TextColor="Black"
+                                                                                        LineBreakMode="WordWrap"/>
+
+                                                                        <Label Grid.Column="2"
+                                                                                        Text="{Binding FormattedCost}"
+                                                                                        TextColor="Red"
+                                                                                        FontAttributes="Bold"/>
+                                                                </Grid>
+                                                        </Frame>
+                                                </DataTemplate>
+                                        </CollectionView.ItemTemplate>
+                                </CollectionView>
+                        </VerticalStackLayout>
+
+                        <Button Text="Quay Lại"
+                                        Clicked="OnBackClicked"
+                                        BackgroundColor="Gray"
+                                        Margin="0,10"/>
+                </VerticalStackLayout>
+        </ScrollView>
+</ContentPage>
