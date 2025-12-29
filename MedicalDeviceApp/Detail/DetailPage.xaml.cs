@@ -6,7 +6,7 @@ namespace MedicalDeviceApp
     [QueryProperty(nameof(Device), "DeviceObj")]
     public partial class DetailPage : ContentPage
     {
-        private const string ApiUrl = "http://localhost:5244/api/Devices"; // Link API gốc
+        private const string ApiUrl = "http://localhost:5244/api/Devices"; // Link API
         private DeviceModel _device = new();
 
         // Danh sách để hiển thị lên màn hình
@@ -18,15 +18,16 @@ namespace MedicalDeviceApp
             set
             {
                 _device = value;
-                LoadData();       // Hiện thông tin thiết bị
-                LoadHistory();    // Hiện lịch sử bảo trì (MỚI)
+                LoadData();
+                LoadHistory();
             }
         }
 
+        // Khởi tạo
         public DetailPage()
         {
             InitializeComponent();
-            MaintenanceList.ItemsSource = MaintenanceHistory; // Gán dữ liệu vào List
+            MaintenanceList.ItemsSource = MaintenanceHistory;
         }
 
         private void LoadData()
@@ -43,7 +44,7 @@ namespace MedicalDeviceApp
             LblStatus.Text = _device.Status;
         }
 
-        // HÀM MỚI: Gọi API lấy lịch sử bảo trì
+        // TẢI LỊCH SỬ BẢO TRÌ
         private async void LoadHistory()
         {
             if (_device == null) return;
@@ -51,7 +52,6 @@ namespace MedicalDeviceApp
             try
             {
                 using HttpClient client = new HttpClient();
-                // Gọi API: /api/Devices/{id}/maintenance
                 var history = await client.GetFromJsonAsync<List<MaintenanceModel>>($"{ApiUrl}/{_device.DeviceID}/maintenance");
 
                 MaintenanceHistory.Clear();
@@ -62,10 +62,11 @@ namespace MedicalDeviceApp
             }
             catch (Exception)
             {
-                // Nếu lỗi thì thôi không hiện gì, hoặc có thể hiện thông báo nhỏ
+                await DisplayAlertAsync("Lỗi", "Không kết nối được API để tải lịch sử bảo trì!", "OK");
             }
         }
 
+        // NÚT QUAY LẠI
         private async void OnBackClicked(object sender, EventArgs e)
         {
             await Shell.Current.GoToAsync("..");

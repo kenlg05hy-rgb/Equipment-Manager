@@ -164,6 +164,7 @@ namespace MedicalDeviceApp
 			catch { }
 		}
 
+		// XÓA TÌM KIẾM KHI ĐỔI NỘI DUNG
 		private void OnSearchTextChanged(object sender, TextChangedEventArgs e)
 		{
 			if (string.IsNullOrWhiteSpace(e.NewTextValue)) OnLoadClicked(null, null);
@@ -178,6 +179,7 @@ namespace MedicalDeviceApp
 			}
 		}
 
+		// RESET FORM
 		private void ResetForm()
 		{
 			TxtName.Text = ""; TxtSerial.Text = ""; TxtStatus.Text = "";

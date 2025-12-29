@@ -199,7 +199,7 @@ namespace MedicalDeviceApi.Repositories
             {
                 conn.Open();
 
-                using (var cmd = new SqlCommand("SELECT COUNT(*), SUM(Price) FROM Devices WHERE IsDeleted = 0", conn))
+                using (var cmd = new SqlCommand("SELECT COUNT(*), SUM(Price) FROM Devices WHERE IsDeleted = 0 OR IsDeleted IS NULL", conn))
                 {
                     using (var reader = cmd.ExecuteReader())
                     {
@@ -216,7 +216,7 @@ namespace MedicalDeviceApi.Repositories
             SELECT 
                 SUM(CASE WHEN Status LIKE N'%Tốt%' THEN 1 ELSE 0 END) as Good,
                 SUM(CASE WHEN Status LIKE N'%Hỏng%' OR Status LIKE N'%Bảo trì%' THEN 1 ELSE 0 END) as Broken
-            FROM Devices WHERE IsDeleted = 0";
+            FROM Devices WHERE IsDeleted = 0 OR IsDeleted IS NULL";
 
                 using (var cmd = new SqlCommand(sqlStatus, conn))
                 {
