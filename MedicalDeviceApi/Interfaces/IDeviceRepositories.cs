@@ -10,5 +10,6 @@ namespace MedicalDeviceApi.Interfaces
         bool SoftDeleteDevice(int id);
         Device? GetDeviceById(int id);
         IEnumerable<Device> SearchDevices(string? status, string? keyword);
+        List<MaintenanceDto> GetMaintenanceHistory(int deviceId);
     }
 }

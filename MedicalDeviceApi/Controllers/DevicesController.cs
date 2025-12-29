@@ -115,5 +115,19 @@ namespace MedicalDeviceApi.Controllers
                 return StatusCode(500, new { Message = "Lỗi hệ thống: " + ex.Message, Error = ex.ToString() });
             }
         }
+
+        [HttpGet("{id}/maintenance")]
+        public IActionResult GetMaintenance(int id)
+        {
+            try
+            {
+                var history = _repository.GetMaintenanceHistory(id);
+                return Ok(history);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Lỗi Server: " + ex.Message);
+            }
+        }
     }
 }
