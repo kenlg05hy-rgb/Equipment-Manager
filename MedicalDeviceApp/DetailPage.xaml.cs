@@ -7,7 +7,7 @@ namespace MedicalDeviceApp
     public partial class DetailPage : ContentPage
     {
         private const string ApiUrl = "http://localhost:5244/api/Devices"; // Link API gốc
-        private DeviceModel _device;
+        private DeviceModel _device = new();
 
         // Danh sách để hiển thị lên màn hình
         public ObservableCollection<MaintenanceModel> MaintenanceHistory { get; set; } = new();

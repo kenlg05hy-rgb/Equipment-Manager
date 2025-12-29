@@ -1,5 +1,6 @@
 using Microsoft.Data.SqlClient;
 using MedicalDeviceApi.Interfaces;
+using MedicalDeviceApi.Model;
 using MedicalDeviceApi.Models;
 using System.Data;
 
@@ -181,6 +182,50 @@ namespace MedicalDeviceApi.Repositories
                 }
             }
             return list;
+        }
+
+        public DashboardDto GetDashboardStats()
+        {
+            var stats = new DashboardDto();
+
+            using (var conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+
+                using (var cmd = new SqlCommand("SELECT COUNT(*), SUM(Price) FROM Devices WHERE IsDeleted = 0", conn))
+                {
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            stats.TotalDevices = reader.IsDBNull(0) ? 0 : reader.GetInt32(0);
+                            stats.TotalValue = reader.IsDBNull(1) ? 0 : reader.GetDecimal(1);
+                        }
+                    }
+                }
+
+                // 2. Đếm theo trạng thái (Tốt / Hỏng / Khác)
+                var sqlStatus = @"
+            SELECT 
+                SUM(CASE WHEN Status LIKE N'%Tốt%' THEN 1 ELSE 0 END) as Good,
+                SUM(CASE WHEN Status LIKE N'%Hỏng%' OR Status LIKE N'%Bảo trì%' THEN 1 ELSE 0 END) as Broken
+            FROM Devices WHERE IsDeleted = 0";
+
+                using (var cmd = new SqlCommand(sqlStatus, conn))
+                {
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            stats.GoodCount = reader.IsDBNull(0) ? 0 : reader.GetInt32(0);
+                            stats.BrokenCount = reader.IsDBNull(1) ? 0 : reader.GetInt32(1);
+                            // Các trạng thái còn lại
+                            stats.OtherCount = stats.TotalDevices - stats.GoodCount - stats.BrokenCount;
+                        }
+                    }
+                }
+            }
+            return stats;
         }
     }
 }

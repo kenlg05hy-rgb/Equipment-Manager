@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MedicalDeviceApp.DashboardPage"
+             Title="Thống Kê Tổng Quan"
+             BackgroundColor="#F5F5F5">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+            <Label Text="📊 Dashboard"
+                   FontSize="28"
+                   FontAttributes="Bold"
+                   TextColor="#1565C0"
+                   HorizontalOptions="Center"/>
+
+            <Frame BackgroundColor="#2196F3"
+                   CornerRadius="15"
+                   Padding="20"
+                   BorderColor="Transparent">
+                <VerticalStackLayout>
+                    <Label Text="Tổng Số Thiết Bị"
+                           TextColor="White"
+                           FontSize="16"/>
+                    <Label x:Name="LblTotalDevices"
+                           Text="0"
+                           TextColor="White"
+                           FontSize="40"
+                           FontAttributes="Bold"/>
+                    <BoxView HeightRequest="1"
+                             Color="White"
+                             Margin="0,10"/>
+                    <Label Text="Tổng Giá Trị Tài Sản:"
+                           TextColor="#E3F2FD"
+                           FontSize="14"/>
+                    <Label x:Name="LblTotalValue"
+                           Text="0 VNĐ"
+                           TextColor="White"
+                           FontSize="20"
+                           FontAttributes="Bold"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <Grid ColumnDefinitions="*,*"
+                  ColumnSpacing="15">
+                <Frame Grid.Column="0"
+                       BackgroundColor="#4CAF50"
+                       CornerRadius="15"
+                       Padding="15"
+                       BorderColor="Transparent">
+                    <VerticalStackLayout HorizontalOptions="Center">
+                        <Label Text="✅ Hoạt Động"
+                               TextColor="White"
+                               FontSize="14"/>
+                        <Label x:Name="LblGood"
+                               Text="0"
+                               TextColor="White"
+                               FontSize="32"
+                               FontAttributes="Bold"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <Frame Grid.Column="1"
+                       BackgroundColor="#F44336"
+                       CornerRadius="15"
+                       Padding="15"
+                       BorderColor="Transparent">
+                    <VerticalStackLayout HorizontalOptions="Center">
+                        <Label Text="⚠️ Hỏng/Bảo trì"
+                               TextColor="White"
+                               FontSize="14"/>
+                        <Label x:Name="LblBroken"
+                               Text="0"
+                               TextColor="White"
+                               FontSize="32"
+                               FontAttributes="Bold"/>
+                    </VerticalStackLayout>
+                </Frame>
+            </Grid>
+
+            <Button Text="🔄 Cập Nhật Số Liệu"
+                    Clicked="OnRefreshClicked"
+                    BackgroundColor="White"
+                    TextColor="#1565C0"
+                    BorderColor="#1565C0"
+                    BorderWidth="1"
+                    Margin="0,20,0,0"/>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

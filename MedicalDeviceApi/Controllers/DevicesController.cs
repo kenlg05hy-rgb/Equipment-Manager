@@ -129,5 +129,19 @@ namespace MedicalDeviceApi.Controllers
                 return StatusCode(500, "Lỗi Server: " + ex.Message);
             }
         }
+
+        [HttpGet("stats")]
+        public IActionResult GetStats()
+        {
+            try
+            {
+                var stats = _repository.GetDashboardStats();
+                return Ok(stats);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Lỗi: " + ex.Message);
+            }
+        }
     }
 }

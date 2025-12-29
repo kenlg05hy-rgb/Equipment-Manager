@@ -1,3 +1,4 @@
+using MedicalDeviceApi.Model;
 using MedicalDeviceApi.Models;
 
 namespace MedicalDeviceApi.Interfaces
@@ -11,5 +12,6 @@ namespace MedicalDeviceApi.Interfaces
         Device? GetDeviceById(int id);
         IEnumerable<Device> SearchDevices(string? status, string? keyword);
         List<MaintenanceDto> GetMaintenanceHistory(int deviceId);
+        DashboardDto GetDashboardStats();
     }
 }

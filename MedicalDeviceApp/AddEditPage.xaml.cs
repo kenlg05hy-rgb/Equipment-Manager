@@ -6,7 +6,7 @@ namespace MedicalDeviceApp
     public partial class AddEditPage : ContentPage
     {
         private const string ApiUrl = "http://localhost:5244/api/Devices";
-        private DeviceModel _device;
+        private DeviceModel _device = new();
 
         public DeviceModel Device
         {
@@ -34,7 +34,7 @@ namespace MedicalDeviceApp
         {
             if (string.IsNullOrWhiteSpace(TxtName.Text) || string.IsNullOrWhiteSpace(TxtSerial.Text))
             {
-                await DisplayAlert("Lỗi", "Vui lòng nhập Tên và Serial", "OK"); return;
+                await DisplayAlertAsync("Lỗi", "Vui lòng nhập Tên và Serial", "OK"); return;
             }
             decimal.TryParse(TxtPrice.Text, out decimal price);
             var deviceData = new DeviceModel
@@ -60,12 +60,12 @@ namespace MedicalDeviceApp
 
                 if (response.IsSuccessStatusCode)
                 {
-                    await DisplayAlert("Thành công", "Đã lưu dữ liệu!", "OK");
+                    await DisplayAlertAsync("Thành công", "Đã lưu dữ liệu!", "OK");
                     await Shell.Current.GoToAsync("..");
                 }
-                else await DisplayAlert("Lỗi API", await response.Content.ReadAsStringAsync(), "OK");
+                else await DisplayAlertAsync("Lỗi API", await response.Content.ReadAsStringAsync(), "OK");
             }
-            catch (Exception ex) { await DisplayAlert("Lỗi", ex.Message, "OK"); }
+            catch (Exception ex) { await DisplayAlertAsync("Lỗi", ex.Message, "OK"); }
         }
 
         private async void OnCancelClicked(object sender, EventArgs e) { await Shell.Current.GoToAsync(".."); }

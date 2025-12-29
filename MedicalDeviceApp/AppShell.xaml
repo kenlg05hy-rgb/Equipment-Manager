@@ -6,9 +6,16 @@
     xmlns:local="clr-namespace:MedicalDeviceApp"
     Title="MedicalDeviceApp">
 
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+    <TabBar>
+        <Tab Title="Danh Sách"
+                Icon="dotnet_bot.png">
+            <ShellContent ContentTemplate="{DataTemplate local:MainPage}"/>
+        </Tab>
+
+        <Tab Title="Thống Kê"
+                Icon="dotnet_bot.png">
+            <ShellContent ContentTemplate="{DataTemplate local:DashboardPage}"/>
+        </Tab>
+    </TabBar>
 
 </Shell>
