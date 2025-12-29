@@ -8,6 +8,6 @@ namespace MedicalDeviceApp
         public int BrokenCount { get; set; }
         public int OtherCount { get; set; }
 
-        public string FormattedValue => TotalValue.ToString("N2") + " VNĐ";
+        public string FormattedValue => TotalValue.ToString("N0") + " VNĐ";
     }
 }
