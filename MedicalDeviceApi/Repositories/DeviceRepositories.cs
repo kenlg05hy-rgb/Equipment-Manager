@@ -1,4 +1,5 @@
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
 using MedicalDeviceApi.Interfaces;
 using MedicalDeviceApi.Model;
 using MedicalDeviceApi.Models;
@@ -12,7 +13,8 @@ namespace MedicalDeviceApi.Repositories
 
         public DeviceRepository(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString("DefaultConnection")!;
+            _connectionString = configuration.GetConnectionString("DefaultConnection")
+                ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
         }
 
         // LẤY DANH SÁCH

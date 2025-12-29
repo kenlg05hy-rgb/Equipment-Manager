@@ -1,7 +1,13 @@
+using MedicalDeviceApi.Interfaces;
+using MedicalDeviceApi.Repositories;
+
 var builder = WebApplication.CreateBuilder(args);
 
+
 builder.Services.AddControllers();
-builder.Services.AddScoped<MedicalDeviceApi.Interfaces.IDeviceRepository, MedicalDeviceApi.Repositories.DeviceRepository>();
+
+builder.Services.AddScoped<IDeviceRepository, DeviceRepository>();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -19,11 +25,11 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
 }
 
-// app.UseHttpsRedirection();
+// app.UseHttpsRedirection()
 
 app.UseAuthorization();
 
-// Add request logging middleware
+// Middleware log request
 app.Use(async (context, next) =>
 {
     var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
