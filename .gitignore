@@ -1,13 +1,12 @@
--[Bb]in/
+[Bb]in/
 [Oo]bj/
-
+.vs/
 .vscode/
+**/appsettings.Development.json
 *.user
 *.suo
 *.userprefs
-
-appsettings.Development.json
-
 .DS_Store
 Thumbs.db
+.fake
 .fake
