@@ -9,10 +9,7 @@ namespace MedicalDeviceApi.Models
 
         [Required(ErrorMessage = "Số Serial không được để trống")]
         public string SerialNumber { get; set; } = string.Empty;
-
         public string Status { get; set; } = "Mới";
-
-        // --- CÁC TRƯỜNG BỔ SUNG ---
         public string? Model { get; set; }
         public string? Origin { get; set; }
         public int? ManufactureYear { get; set; }

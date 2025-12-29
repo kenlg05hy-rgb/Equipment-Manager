@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using MedicalDeviceApi.Models;
-using MedicalDeviceApi.Interfaces; // using Interface
+using MedicalDeviceApi.Interfaces;
 using MedicalDeviceApi.Repositories;
 
 namespace MedicalDeviceApi.Controllers
@@ -9,9 +9,8 @@ namespace MedicalDeviceApi.Controllers
     [Route("api/[controller]")]
     public class DevicesController : ControllerBase
     {
-        private readonly IDeviceRepository _repository; // Chỉ giao tiếp với Interface
+        private readonly IDeviceRepository _repository;
 
-        // Constructor Injection
         public DevicesController(IDeviceRepository repository)
         {
             _repository = repository;

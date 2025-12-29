@@ -72,12 +72,12 @@ namespace MedicalDeviceApp
 				HttpResponseMessage response;
 				if (_editingDeviceId == null)
 				{
-					// POST
+					// Post
 					response = await client.PostAsJsonAsync(ApiUrl, deviceData);
 				}
 				else
 				{
-					// PUT
+					// Put
 					response = await client.PutAsJsonAsync($"{ApiUrl}/{_editingDeviceId}", deviceData);
 				}
 
@@ -148,7 +148,7 @@ namespace MedicalDeviceApp
 			}
 		}
 
-		// --- 5. TÌM KIẾM ---
+		// TÌM KIẾM
 		private async void OnSearchPressed(object sender, EventArgs e)
 		{
 			string keyword = TxtSearch.Text;
@@ -173,7 +173,6 @@ namespace MedicalDeviceApp
 		{
 			if (sender is Button btn && btn.CommandParameter is DeviceModel device)
 			{
-				// Chuyển sang trang DetailPage
 				var navParam = new Dictionary<string, object> { { "DeviceObj", device } };
 				await Shell.Current.GoToAsync(nameof(DetailPage), navParam);
 			}
@@ -189,7 +188,6 @@ namespace MedicalDeviceApp
 			_editingDeviceId = null;
 			LoadBtn.Text = "🔄 Tải Lại Danh Sách";
 
-			// Trả lại nút Lưu màu xanh
 			BtnSave.Text = "+ Lưu Hồ Sơ Thiết Bị";
 			BtnSave.BackgroundColor = Color.FromArgb("#00C853");
 			BtnSave.TextColor = Colors.White;

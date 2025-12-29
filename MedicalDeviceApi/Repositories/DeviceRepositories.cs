@@ -15,7 +15,7 @@ namespace MedicalDeviceApi.Repositories
             _connectionString = configuration.GetConnectionString("DefaultConnection")!;
         }
 
-        // 1. LẤY DANH SÁCH (SELECT)
+        // LẤY DANH SÁCH
         public List<Device> GetAllDevices()
         {
             var devices = new List<Device>();
@@ -39,7 +39,7 @@ namespace MedicalDeviceApi.Repositories
             return devices;
         }
 
-        // 2. TẠO MỚI (INSERT)
+        // THÊM THIẾT BỊ MỚI
         public void CreateDevice(CreateDeviceDto device)
         {
             using (var conn = new SqlConnection(_connectionString))
@@ -81,6 +81,7 @@ namespace MedicalDeviceApi.Repositories
             }
         }
 
+        // LẤY THIẾT BỊ THEO ID
         public Device? GetDeviceById(int id)
         {
             using var conn = new SqlConnection(_connectionString);
@@ -93,6 +94,7 @@ namespace MedicalDeviceApi.Repositories
             return MapReaderToDevice(reader);
         }
 
+        // CẬP NHẬT THIẾT BỊ
         public void UpdateDevice(int id, UpdateDeviceDto deviceDto)
         {
             using var conn = new SqlConnection(_connectionString);
@@ -104,6 +106,7 @@ namespace MedicalDeviceApi.Repositories
             if (cmd.ExecuteNonQuery() == 0) throw new KeyNotFoundException();
         }
 
+        // XÓA THIẾT BỊ
         public bool SoftDeleteDevice(int id)
         {
             using var conn = new SqlConnection(_connectionString);
@@ -113,6 +116,7 @@ namespace MedicalDeviceApi.Repositories
             return cmd.ExecuteNonQuery() > 0;
         }
 
+        // TÌM KIẾM THIẾT BỊ
         public IEnumerable<Device> SearchDevices(string? status, string? keyword)
         {
             var devices = new List<Device>();
@@ -131,7 +135,7 @@ namespace MedicalDeviceApi.Repositories
             return devices;
         }
 
-        // --- HÀM PHỤ TRỢ (HELPER) ĐỂ MAP DỮ LIỆU GỌN GÀNG ---
+        // HÀM PHỤ TRỢ
         private Device MapReaderToDevice(SqlDataReader reader)
         {
             return new Device
@@ -155,13 +159,13 @@ namespace MedicalDeviceApi.Repositories
             };
         }
 
+        // LẤY LỊCH SỬ BẢO TRÌ
         public List<MaintenanceDto> GetMaintenanceHistory(int deviceId)
         {
             var list = new List<MaintenanceDto>();
             using (var conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
-                // Gọi Stored Procedure đã tạo trong SQL
                 using (var cmd = new SqlCommand("sp_GetMaintenanceByDevice", conn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
@@ -184,6 +188,7 @@ namespace MedicalDeviceApi.Repositories
             return list;
         }
 
+        // LẤY THỐNG KÊ
         public DashboardDto GetDashboardStats()
         {
             var stats = new DashboardDto();
@@ -204,7 +209,7 @@ namespace MedicalDeviceApi.Repositories
                     }
                 }
 
-                // 2. Đếm theo trạng thái (Tốt / Hỏng / Khác)
+                // Đếm theo trạng thái (Tốt / Hỏng / Khác)
                 var sqlStatus = @"
             SELECT 
                 SUM(CASE WHEN Status LIKE N'%Tốt%' THEN 1 ELSE 0 END) as Good,
